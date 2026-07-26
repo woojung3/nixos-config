@@ -2,7 +2,8 @@
 let
   theme = import ../../themes/bloom.nix;
   c = theme.colors;
-  wallpaper = ../../assets/wallpapers/flowers.jpg;
+  # Private family photo kept outside this public repository.
+  wallpaper = "/home/jwlee/Pictures/Wallpapers/family-portrait.jpg";
 in
 {
   wayland.windowManager.hyprland = {
