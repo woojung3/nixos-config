@@ -1,0 +1,182 @@
+{ ... }:
+let
+  theme = import ../../themes/bloom.nix;
+  c = theme.colors;
+in
+{
+  programs.waybar = {
+    enable = true;
+    systemd.enable = true;
+    settings.mainBar = {
+      layer = "top";
+      position = "top";
+      height = 34;
+      margin-top = 10;
+      margin-left = 14;
+      margin-right = 14;
+      spacing = 0;
+
+      modules-left = [ "custom/launcher" "hyprland/window" ];
+      modules-center = [ "hyprland/workspaces" ];
+      modules-right = [ "tray" "network" "wireplumber" "backlight" "battery" "clock" ];
+
+      "custom/launcher" = {
+        format = "jwlaptop";
+        tooltip = false;
+        on-click = "rofi -show drun";
+      };
+
+      "hyprland/window" = {
+        format = "{title}";
+        max-length = 42;
+        separate-outputs = true;
+      };
+
+      "hyprland/workspaces" = {
+        format = "{id}";
+        persistent-workspaces = { "*" = 5; };
+        on-click = "activate";
+      };
+
+      tray = {
+        icon-size = 15;
+        spacing = 8;
+      };
+
+      network = {
+        interval = 5;
+        format-wifi = "{essid}";
+        format-ethernet = "wired";
+        format-disconnected = "offline";
+        tooltip-format = "{ifname} · {ipaddr}/{cidr}\n{bandwidthDownBits} down · {bandwidthUpBits} up";
+        on-click = "nm-connection-editor";
+      };
+
+      wireplumber = {
+        format = "VOL {volume}%";
+        format-muted = "VOL —";
+        on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        on-click-right = "pavucontrol";
+      };
+
+      backlight = {
+        format = "LUX {percent}%";
+        on-scroll-up = "brightnessctl set 5%+";
+        on-scroll-down = "brightnessctl set 5%-";
+      };
+
+      battery = {
+        interval = 30;
+        states = { warning = 25; critical = 12; };
+        format = "BAT {capacity}%";
+        format-charging = "BAT +{capacity}%";
+        tooltip-format = "{timeTo} · {power:.1f} W";
+      };
+
+      clock = {
+        interval = 30;
+        format = "{:%a %d · %H:%M}";
+        tooltip-format = "<tt><small>{calendar}</small></tt>";
+        calendar = {
+          mode = "month";
+          weeks-pos = "right";
+        };
+      };
+    };
+
+    style = ''
+      * {
+        border: none;
+        border-radius: 0;
+        min-height: 0;
+        font-family: "${theme.fonts.ui}", "Noto Sans CJK KR", sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      window#waybar {
+        background: transparent;
+        color: #${c.foreground};
+      }
+
+      .modules-left,
+      .modules-center,
+      .modules-right {
+        background: #${c.background};
+        border: 1px solid #${c.surfaceRaised};
+        border-radius: 10px;
+        box-shadow: 0 3px 14px rgba(0, 0, 0, 0.32);
+      }
+
+      #custom-launcher {
+        padding: 0 13px;
+        color: #${c.accent};
+        font-weight: 600;
+      }
+
+      #window {
+        padding: 0 13px 0 5px;
+        color: #${c.muted};
+      }
+
+      window#waybar.empty #window {
+        padding: 0;
+      }
+
+      #workspaces {
+        padding: 3px 5px;
+      }
+
+      #workspaces button {
+        min-width: 27px;
+        padding: 0 7px;
+        border-radius: 7px;
+        color: #${c.muted};
+        background: transparent;
+      }
+
+      #workspaces button:hover {
+        color: #${c.foreground};
+        background: #${c.surfaceRaised};
+      }
+
+      #workspaces button.active {
+        color: #${c.background};
+        background: #${c.accent};
+      }
+
+      #workspaces button.urgent {
+        color: #${c.background};
+        background: #${c.urgent};
+      }
+
+      #tray,
+      #network,
+      #wireplumber,
+      #backlight,
+      #battery,
+      #clock {
+        padding: 0 10px;
+        color: #${c.foreground};
+      }
+
+      #tray,
+      #network,
+      #wireplumber,
+      #backlight,
+      #battery {
+        border-right: 1px solid #${c.surfaceRaised};
+      }
+
+      #battery.warning { color: #${c.accentSoft}; }
+      #battery.critical { color: #${c.urgent}; }
+
+      tooltip {
+        background: #${c.background};
+        color: #${c.foreground};
+        border: 1px solid #${c.surfaceRaised};
+        border-radius: 8px;
+      }
+    '';
+  };
+}

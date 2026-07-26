@@ -1,0 +1,21 @@
+name: Nix flake check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: Check flake
+        run: nix flake check --print-build-logs
+      - name: Build NixOS system
+        run: nix build .#nixosConfigurations.jwlaptop.config.system.build.toplevel --no-link --print-build-logs
