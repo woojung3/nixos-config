@@ -55,6 +55,7 @@ in
     settings = {
       user.name = "Jinwoo Lee";
       user.email = "woojung3@postech.ac.kr";
+      credential.helper = "store";
       init.defaultBranch = "main";
       pull.rebase = false;
     };
