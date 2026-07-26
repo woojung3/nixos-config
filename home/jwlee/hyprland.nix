@@ -89,6 +89,14 @@ in
         focus_on_activate = true;
       };
 
+      windowrule = [{
+        name = "mousepad-float";
+        "match:class" = "^org\\.xfce\\.mousepad$";
+        float = "on";
+        center = "on";
+        size = "900 650";
+      }];
+
       bind = [
         "$mainMod, T, exec, foot"
         "$mainMod, B, exec, google-chrome-stable"
