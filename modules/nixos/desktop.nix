@@ -34,7 +34,8 @@
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
-    GTK_IM_MODULE = "fcitx";
+    # Native GTK Wayland applications use the Wayland text-input protocol.
+    # Setting GTK_IM_MODULE makes Fcitx5 show a diagnostic on every login.
     QT_IM_MODULE = "fcitx";
     XMODIFIERS = "@im=fcitx";
   };
