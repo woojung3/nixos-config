@@ -25,35 +25,49 @@ in
 
   xdg.configFile."rofi/themes/bloom.rasi".text = ''
     * {
-      background: #${c.background};
-      surface: #${c.surface};
-      raised: #${c.surfaceRaised};
-      foreground: #${c.foreground};
-      muted: #${c.muted};
-      accent: #${c.accent};
+      bloom-bg: #${c.background};
+      bloom-surface: #${c.surface};
+      bloom-raised: #${c.surfaceRaised};
+      bloom-fg: #${c.foreground};
+      bloom-muted: #${c.muted};
+      bloom-accent: #${c.accent};
+      background-color: transparent;
+      text-color: @bloom-fg;
     }
 
     window {
-      width: 580px;
+      width: 600px;
       border: 2px;
-      border-color: @accent;
+      border-color: @bloom-accent;
       border-radius: 10px;
-      background-color: @background;
+      background-color: @bloom-bg;
       padding: 14px;
     }
 
-    mainbox { spacing: 12px; }
+    mainbox {
+      spacing: 12px;
+      background-color: transparent;
+    }
 
     inputbar {
       children: [ prompt, entry ];
       spacing: 10px;
       padding: 11px 13px;
       border-radius: 7px;
-      background-color: @surface;
+      background-color: @bloom-surface;
     }
 
-    prompt { color: @accent; }
-    entry { placeholder: "Type to search"; placeholder-color: @muted; }
+    prompt {
+      background-color: transparent;
+      text-color: @bloom-accent;
+    }
+
+    entry {
+      background-color: transparent;
+      text-color: @bloom-fg;
+      placeholder: "Type to search";
+      placeholder-color: @bloom-muted;
+    }
 
     listview {
       lines: 8;
@@ -61,6 +75,7 @@ in
       fixed-height: false;
       scrollbar: false;
       spacing: 4px;
+      background-color: transparent;
     }
 
     element {
@@ -68,15 +83,28 @@ in
       spacing: 12px;
       border-radius: 7px;
       background-color: transparent;
-      text-color: @foreground;
+      text-color: @bloom-fg;
     }
 
     element selected.normal {
-      background-color: @raised;
-      text-color: @foreground;
+      background-color: @bloom-raised;
+      text-color: @bloom-fg;
     }
 
-    element-icon { size: 24px; background-color: transparent; }
-    element-text { vertical-align: 0.5; background-color: transparent; }
+    element-icon {
+      size: 24px;
+      background-color: transparent;
+    }
+
+    element-text {
+      vertical-align: 0.5;
+      background-color: transparent;
+      text-color: inherit;
+    }
+
+    message, textbox {
+      background-color: transparent;
+      text-color: @bloom-muted;
+    }
   '';
 }

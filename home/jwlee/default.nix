@@ -22,6 +22,7 @@ in
       BROWSER = "google-chrome-stable";
       TERMINAL = "foot";
     };
+    sessionPath = [ "$HOME/.local/bin" ];
     packages = with pkgs; [
       papirus-icon-theme
       bibata-cursors

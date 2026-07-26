@@ -7,10 +7,14 @@ in
 {
   wayland.windowManager.hyprland = {
     enable = true;
+    # This configuration uses Hyprlang-style variables and bind strings.
+    # Home Manager 26.05 otherwise defaults new installations to Lua.
+    configType = "hyprlang";
     systemd.enable = false; # UWSM owns the graphical session.
     settings = {
       "$mainMod" = "SUPER";
-      monitor = ",preferred,auto,1";
+      # Native 1920x1080 with no UI scaling for maximum usable workspace.
+      monitor = "eDP-1,preferred,auto,1";
 
       exec-once = [
         "fcitx5 -d --replace"
@@ -73,7 +77,6 @@ in
       };
 
       dwindle = {
-        pseudotile = true;
         preserve_split = true;
         smart_split = false;
       };
@@ -95,7 +98,7 @@ in
         "$mainMod, F, fullscreen"
         "$mainMod, V, togglefloating"
         "$mainMod, P, pseudo"
-        "$mainMod, J, togglesplit"
+        "$mainMod, J, layoutmsg, togglesplit"
         "$mainMod, L, exec, loginctl lock-session"
         "$mainMod SHIFT, S, exec, grim -g \"$(slurp)\" - | swappy -f -"
         "$mainMod, C, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
@@ -139,8 +142,11 @@ in
     settings = {
       ipc = "on";
       splash = false;
-      preload = [ "${wallpaper}" ];
-      wallpaper = [ ",${wallpaper}" ];
+      wallpaper = [{
+        monitor = "eDP-1";
+        path = "${wallpaper}";
+        fit_mode = "cover";
+      }];
     };
   };
 

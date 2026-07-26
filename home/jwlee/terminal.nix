@@ -14,10 +14,11 @@ in
         term = "xterm-256color";
         selection-target = "clipboard";
       };
-      colors = {
+      "colors-dark" = {
         alpha = 0.98;
         background = c.background;
         foreground = c.foreground;
+        cursor = "${c.background} ${c.accent}";
         regular0 = c.background;
         regular1 = c.urgent;
         regular2 = c.olive;
@@ -35,10 +36,7 @@ in
         bright6 = c.secondary;
         bright7 = "ffffff";
       };
-      cursor = {
-        color = "${c.background} ${c.accent}";
-        blink = "yes";
-      };
+      cursor.blink = "yes";
       mouse.hide-when-typing = "yes";
       key-bindings = {
         clipboard-copy = "Control+Shift+c XF86Copy";

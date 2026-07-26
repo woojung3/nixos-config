@@ -26,9 +26,9 @@ in
       rebuild = "nh os switch";
     };
     initContent = ''
-      setopt LOCAL_OPTIONS RM_STAR_SILENT
-      autoload -Uz vcs_info
-      precmd() { vcs_info }
+      setopt LOCAL_OPTIONS RM_STAR_SILENT PROMPT_SUBST
+      autoload -Uz add-zsh-hook vcs_info
+      add-zsh-hook precmd vcs_info
       zstyle ':vcs_info:git:*' formats ' %F{#${c.muted}}(%b)%f'
       PROMPT='%F{#${c.accent}}%n%f %F{#${c.muted}}%1~%f''${vcs_info_msg_0_} %F{#${c.secondary}}›%f '
     '';
