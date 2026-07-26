@@ -18,11 +18,11 @@ in
 
       modules-left = [ "custom/launcher" "hyprland/window" ];
       modules-center = [ "hyprland/workspaces" ];
-      modules-right = [ "tray" "network" "wireplumber" "backlight" "battery" "clock" ];
+      modules-right = [ "tray" "network" "wireplumber" "backlight" "battery" "clock" "custom/power" ];
 
       "custom/launcher" = {
-        format = "jwlaptop";
-        tooltip = false;
+        format = "✿";
+        tooltip-format = "Applications";
         on-click = "rofi -show drun";
       };
 
@@ -82,6 +82,12 @@ in
           weeks-pos = "right";
         };
       };
+
+      "custom/power" = {
+        format = "⏻";
+        tooltip-format = "Power menu";
+        on-click = "power-menu";
+      };
     };
 
     style = ''
@@ -109,8 +115,9 @@ in
       }
 
       #custom-launcher {
-        padding: 0 13px;
+        padding: 0 12px;
         color: #${c.accent};
+        font-size: 16px;
         font-weight: 600;
       }
 
@@ -164,10 +171,18 @@ in
       #network,
       #wireplumber,
       #backlight,
-      #battery {
+      #battery,
+      #clock {
         border-right: 1px solid #${c.surfaceRaised};
       }
 
+      #custom-power {
+        padding: 0 12px;
+        color: #${c.accent};
+        font-size: 15px;
+      }
+
+      #custom-power:hover { color: #${c.foreground}; }
       #battery.warning { color: #${c.accentSoft}; }
       #battery.critical { color: #${c.urgent}; }
 

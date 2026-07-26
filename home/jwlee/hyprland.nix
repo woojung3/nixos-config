@@ -89,13 +89,22 @@ in
         focus_on_activate = true;
       };
 
-      windowrule = [{
-        name = "mousepad-float";
-        "match:class" = "^org\\.xfce\\.mousepad$";
-        float = "on";
-        center = "on";
-        size = "900 650";
-      }];
+      windowrule = [
+        {
+          name = "mousepad-float";
+          "match:class" = "^org\\.xfce\\.mousepad$";
+          float = "on";
+          center = "on";
+          size = "900 650";
+        }
+        {
+          name = "thunar-float";
+          "match:class" = "^thunar$";
+          float = "on";
+          center = "on";
+          size = "900 650";
+        }
+      ];
 
       bind = [
         "$mainMod, T, exec, foot"
@@ -104,12 +113,13 @@ in
         "$mainMod, N, exec, ${pkgs.mousepad}/bin/mousepad"
         "$mainMod, SPACE, exec, rofi -show drun"
         "$mainMod, Q, killactive"
-        "$mainMod SHIFT, Q, exit"
+        "ALT, F4, killactive"
         "$mainMod, F, fullscreen"
         "$mainMod, V, togglefloating"
         "$mainMod, P, pseudo"
         "$mainMod, J, layoutmsg, togglesplit"
         "$mainMod, L, exec, loginctl lock-session"
+        "$mainMod, ESCAPE, exec, power-menu"
         "$mainMod SHIFT, S, exec, grim -g \"$(slurp)\" - | swappy -f -"
         "$mainMod, C, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
@@ -261,6 +271,14 @@ in
     '';
   };
   services.cliphist.enable = true;
+
+  xdg.configFile."swappy/config".text = ''
+    [Default]
+    save_dir=$HOME/Pictures/Screenshots
+    save_filename_format=screenshot-%Y%m%d-%H%M%S.png
+    early_exit=true
+    auto_save=false
+  '';
 
   home.packages = with pkgs; [
     cliphist

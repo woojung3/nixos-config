@@ -2,9 +2,41 @@
 let
   theme = import ../../themes/bloom.nix;
   c = theme.colors;
+  powerMenu = pkgs.writeShellApplication {
+    name = "power-menu";
+    runtimeInputs = with pkgs; [ rofi systemd uwsm ];
+    text = ''
+      confirm() {
+        local prompt="$1"
+        local choice
+        choice="$(printf 'Cancel\nConfirm\n' | rofi -dmenu -no-custom -no-sort -selected-row 0 -p "$prompt" -mesg 'Esc to cancel')" || return 1
+        [[ "$choice" == "Confirm" ]]
+      }
+
+      choice="$(printf 'Lock\nSuspend\nLog out\nRestart\nShut down\n' | rofi -dmenu -i -no-custom -no-sort -p 'Power' -mesg 'Esc to cancel')" || exit 0
+
+      case "$choice" in
+        "Lock")
+          loginctl lock-session
+          ;;
+        "Suspend")
+          systemctl suspend
+          ;;
+        "Log out")
+          uwsm stop
+          ;;
+        "Restart")
+          confirm "Restart?" && systemctl reboot
+          ;;
+        "Shut down")
+          confirm "Shut down?" && systemctl poweroff
+          ;;
+      esac
+    '';
+  };
 in
 {
-  home.packages = [ pkgs.rofi ];
+  home.packages = [ pkgs.rofi powerMenu ];
 
   xdg.configFile."rofi/config.rasi".text = ''
     configuration {

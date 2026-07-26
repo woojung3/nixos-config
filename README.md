@@ -38,8 +38,9 @@ remain available from the boot menu if a system change fails.
 | `Super+E` | File manager |
 | `Super+N` | Mousepad text editor |
 | `Super+Space` | Application launcher |
-| `Super+Q` | Close window |
+| `Super+Q` / `Alt+F4` | Close window |
 | `Super+L` | Lock |
+| `Super+Escape` | Power menu |
 | `Super+1..9` | Switch workspace |
 | `Super+Shift+1..9` | Move window to workspace |
 | `Super+arrows` | Move focus |
