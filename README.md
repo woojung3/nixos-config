@@ -36,6 +36,7 @@ remain available from the boot menu if a system change fails.
 | `Super+T` | Terminal |
 | `Super+B` | Browser |
 | `Super+E` | File manager |
+| `Super+N` | Mousepad text editor |
 | `Super+Space` | Application launcher |
 | `Super+Q` | Close window |
 | `Super+L` | Lock |

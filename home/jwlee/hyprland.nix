@@ -93,6 +93,7 @@ in
         "$mainMod, T, exec, foot"
         "$mainMod, B, exec, google-chrome-stable"
         "$mainMod, E, exec, thunar"
+        "$mainMod, N, exec, ${pkgs.mousepad}/bin/mousepad"
         "$mainMod, SPACE, exec, rofi -show drun"
         "$mainMod, Q, killactive"
         "$mainMod SHIFT, Q, exit"

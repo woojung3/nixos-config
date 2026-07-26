@@ -4,6 +4,7 @@
     # Daily applications
     google-chrome
     obsidian
+    mousepad
     smplayer
     baobab
 
