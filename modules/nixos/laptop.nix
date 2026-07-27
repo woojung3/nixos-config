@@ -24,7 +24,6 @@
     settings.General = {
       Name = "jwlaptop";
       ControllerMode = "dual";
-      FastConnectable = true;
     };
   };
 }

@@ -24,9 +24,6 @@ in
     };
     sessionPath = [ "$HOME/.local/bin" ];
     packages = with pkgs; [
-      papirus-icon-theme
-      bibata-cursors
-      adw-gtk3
       jq
       ripgrep
       fd
@@ -75,11 +72,14 @@ in
     };
   };
 
-  dconf.settings."org/gnome/desktop/interface" = {
-    color-scheme = "prefer-dark";
-    font-name = "${theme.fonts.ui} 10";
-    document-font-name = "${theme.fonts.ui} 10";
-    monospace-font-name = "${theme.fonts.mono} 10";
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      font-name = "${theme.fonts.ui} 10";
+      document-font-name = "${theme.fonts.ui} 10";
+      monospace-font-name = "${theme.fonts.mono} 10";
+    };
+    "org/xfce/mousepad/preferences/view".word-wrap = true;
   };
 
   # Keep the Korean 104-key layout and make the physical Hangul key primary.

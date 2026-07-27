@@ -18,7 +18,7 @@ in
 
       modules-left = [ "custom/launcher" "hyprland/window" ];
       modules-center = [ "hyprland/workspaces" ];
-      modules-right = [ "tray" "network" "wireplumber" "backlight" "battery" "clock" "custom/power" ];
+      modules-right = [ "tray" "wireplumber" "backlight" "battery" "clock" "custom/power" ];
 
       "custom/launcher" = {
         format = "✿";
@@ -43,24 +43,16 @@ in
         spacing = 8;
       };
 
-      network = {
-        interval = 5;
-        format-wifi = "{essid}";
-        format-ethernet = "wired";
-        format-disconnected = "offline";
-        tooltip-format = "{ifname} · {ipaddr}/{cidr}\n{bandwidthDownBits} down · {bandwidthUpBits} up";
-        on-click = "nm-connection-editor";
-      };
-
       wireplumber = {
-        format = "VOL {volume}%";
-        format-muted = "VOL —";
+        format = "{icon} {volume}%";
+        format-muted = "󰖁 —";
+        format-icons = [ "" "" "" ];
         on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
         on-click-right = "pavucontrol";
       };
 
       backlight = {
-        format = "LUX {percent}%";
+        format = " {percent}%";
         on-scroll-up = "brightnessctl set 5%+";
         on-scroll-down = "brightnessctl set 5%-";
       };
@@ -68,8 +60,9 @@ in
       battery = {
         interval = 30;
         states = { warning = 25; critical = 12; };
-        format = "BAT {capacity}%";
-        format-charging = "BAT +{capacity}%";
+        format = "{icon} {capacity}%";
+        format-icons = [ "" "" "" "" "" ];
+        format-charging = "󰂄 {capacity}%";
         tooltip-format = "{timeTo} · {power:.1f} W";
       };
 
@@ -84,7 +77,7 @@ in
       };
 
       "custom/power" = {
-        format = "⏻";
+        format = "";
         tooltip-format = "Power menu";
         on-click = "power-menu";
       };
@@ -95,7 +88,7 @@ in
         border: none;
         border-radius: 0;
         min-height: 0;
-        font-family: "${theme.fonts.ui}", "Noto Sans CJK KR", sans-serif;
+        font-family: "${theme.fonts.ui}", "Symbols Nerd Font", "Noto Sans CJK KR", sans-serif;
         font-size: 12px;
         font-weight: 500;
       }
@@ -158,7 +151,6 @@ in
       }
 
       #tray,
-      #network,
       #wireplumber,
       #backlight,
       #battery,
@@ -168,7 +160,6 @@ in
       }
 
       #tray,
-      #network,
       #wireplumber,
       #backlight,
       #battery,

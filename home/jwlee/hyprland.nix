@@ -8,6 +8,9 @@ in
 {
   wayland.windowManager.hyprland = {
     enable = true;
+    # Hyprland and its portal are provided by the NixOS modules.
+    package = null;
+    portalPackage = null;
     # This configuration uses Hyprlang-style variables and bind strings.
     # Home Manager 26.05 otherwise defaults new installations to Lua.
     configType = "hyprlang";
@@ -18,7 +21,6 @@ in
       monitor = "eDP-1,preferred,auto,1";
 
       exec-once = [
-        "fcitx5 -d --replace"
         "nm-applet --indicator"
         "blueman-applet"
         "hyprctl setcursor Bibata-Modern-Ice 22"
@@ -95,14 +97,14 @@ in
           "match:class" = "^org\\.xfce\\.mousepad$";
           float = "on";
           center = "on";
-          size = "900 650";
+          size = "520 500";
         }
         {
           name = "thunar-float";
           "match:class" = "^thunar$";
           float = "on";
           center = "on";
-          size = "900 650";
+          size = "680 500";
         }
       ];
 
@@ -122,6 +124,11 @@ in
         "$mainMod, ESCAPE, exec, power-menu"
         "$mainMod SHIFT, S, exec, grim -g \"$(slurp)\" - | swappy -f -"
         "$mainMod, C, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+
+        "ALT, TAB, cyclenext"
+        "ALT, TAB, bringactivetotop"
+        "ALT SHIFT, TAB, cyclenext, prev"
+        "ALT SHIFT, TAB, bringactivetotop"
 
         "$mainMod, left, movefocus, l"
         "$mainMod, right, movefocus, r"
@@ -280,9 +287,6 @@ in
     auto_save=false
   '';
 
-  home.packages = with pkgs; [
-    cliphist
-    hyprpaper
-    swaynotificationcenter
-  ];
+  # The hyprpaper service does not add its package to the user profile.
+  home.packages = [ pkgs.hyprpaper ];
 }

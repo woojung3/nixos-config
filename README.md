@@ -45,6 +45,7 @@ remain available from the boot menu if a system change fails.
 | `Super+Shift+1..9` | Move window to workspace |
 | `Super+arrows` | Move focus |
 | `Super+Shift+arrows` | Move window |
+| `Alt+Tab` / `Alt+Shift+Tab` | Cycle windows forward / backward |
 | `Super+Shift+S` | Region screenshot |
 
 The Korean 104-key layout is configured so the physical Hangul key switches

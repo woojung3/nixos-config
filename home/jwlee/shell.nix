@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 let
   theme = import ../../themes/bloom.nix;
   c = theme.colors;
@@ -61,12 +61,19 @@ in
     };
   };
 
+  programs.lazygit = {
+    enable = true;
+    settings.gui = {
+      showIcons = true;
+      nerdFontsVersion = "3";
+    };
+  };
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
   };
 
-  home.packages = [ pkgs.zoxide ];
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
