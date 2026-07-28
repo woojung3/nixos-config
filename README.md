@@ -11,6 +11,8 @@ Declarative NixOS and Home Manager configuration for an Acer Aspire A515-52.
 
 - NixOS 26.05
 - Hyprland on Wayland, launched through UWSM
+- SDDM with the Qylock `pixel-munchlax` login theme
+- Workspace-aware wallpapers through awww
 - Home Manager
 - Unencrypted Btrfs with zstd compression
 - systemd-boot

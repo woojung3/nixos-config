@@ -6,12 +6,20 @@
     xwayland.enable = true;
   };
 
-  services.greetd = {
-    enable = true;
-    settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --cmd '${pkgs.uwsm}/bin/uwsm start hyprland-uwsm.desktop'";
-      user = "greeter";
+  services.displayManager = {
+    defaultSession = "hyprland-uwsm";
+    sddm = {
+      enable = true;
+      wayland.enable = true;
     };
+  };
+
+  programs.qylock = {
+    enable = true;
+    theme = "pixel-munchlax";
+    sddm.enable = true;
+    # Keep Hyprlock as the session lock screen; Qylock is only for login.
+    quickshell.enable = false;
   };
 
   xdg.portal = {

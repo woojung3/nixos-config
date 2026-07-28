@@ -88,7 +88,18 @@ nh os switch
 
 ## First-boot verification
 
-- [ ] Hyprland starts from greetd.
+The private wallpapers are intentionally excluded from this public repository.
+Restore the following files from backup into `~/Pictures/Wallpapers/`:
+
+- `family-portrait.jpg`
+- `glen-canyon.jpg`
+- `grand-canyon.jpg`
+- `jirisan-cheonwangbong-sunrise.jpg`
+- `yeouido.jpg`
+
+Then verify the desktop:
+
+- [ ] SDDM displays the Qylock `pixel-munchlax` theme and starts the UWSM-managed Hyprland session.
 - [ ] Wi-Fi connects through NetworkManager.
 - [ ] The physical Hangul key switches Korean input.
 - [ ] Audio output and microphone work.

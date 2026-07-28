@@ -6,7 +6,8 @@ in
 {
   programs.waybar = {
     enable = true;
-    systemd.enable = true;
+    # Hyprland starts Waybar early so the first desktop frame is already complete.
+    systemd.enable = false;
     settings.mainBar = {
       layer = "top";
       position = "top";
@@ -21,7 +22,7 @@ in
       modules-right = [ "tray" "wireplumber" "backlight" "battery" "clock" "custom/power" ];
 
       "custom/launcher" = {
-        format = "✿";
+        format = "❁";
         tooltip-format = "Applications";
         on-click = "rofi -show drun";
       };

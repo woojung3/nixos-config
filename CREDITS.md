@@ -31,5 +31,14 @@ assets from the following public dotfiles projects.
 - No license was found during the survey.
 - Used as visual inspiration only; no files or source were copied.
 
+## Qylock
+
+- Source: <https://github.com/Darkkal44/qylock>
+- License: GPL-3.0
+- Used through a pinned flake input to provide the SDDM `pixel-munchlax` login
+  theme. Its Quickshell lock screen is disabled.
+- Qylock's bundled artwork retains its upstream provenance as documented by
+  that project.
+
 The full repository is distributed under GPL-3.0. Individual packaged software,
 fonts, icons, and applications retain their respective upstream licenses.

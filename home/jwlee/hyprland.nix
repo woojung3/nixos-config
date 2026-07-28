@@ -2,8 +2,61 @@
 let
   theme = import ../../themes/bloom.nix;
   c = theme.colors;
-  # Private family photo kept outside this public repository.
-  wallpaper = "/home/jwlee/Pictures/Wallpapers/family-portrait.jpg";
+  # Private photos kept outside this public repository.
+  wallpapers = {
+    glenCanyon = "/home/jwlee/Pictures/Wallpapers/glen-canyon.jpg";
+    family = "/home/jwlee/Pictures/Wallpapers/family-portrait.jpg";
+    jirisanSunrise = "/home/jwlee/Pictures/Wallpapers/jirisan-cheonwangbong-sunrise.jpg";
+    yeouido = "/home/jwlee/Pictures/Wallpapers/yeouido.jpg";
+    grandCanyon = "/home/jwlee/Pictures/Wallpapers/grand-canyon.jpg";
+  };
+  workspaceWallpaper = pkgs.writeShellApplication {
+    name = "workspace-wallpaper";
+    runtimeInputs = [ pkgs.awww pkgs.hyprland pkgs.jq pkgs.socat ];
+    text = ''
+      current_path=""
+
+      set_wallpaper() {
+        case "$1" in
+          1) path=${wallpapers.glenCanyon} ;;
+          2) path=${wallpapers.family} ;;
+          3) path=${wallpapers.jirisanSunrise} ;;
+          4) path=${wallpapers.yeouido} ;;
+          5) path=${wallpapers.grandCanyon} ;;
+          *) path=${wallpapers.family} ;;
+        esac
+
+        if [[ "$path" == "$current_path" ]]; then
+          return
+        fi
+
+        # The daemon may need a moment to create its socket during login.
+        for _ in {1..20}; do
+          if awww img --outputs eDP-1 --resize crop \
+            --transition-type fade --transition-duration 0.25 \
+            --transition-fps 60 "$path" >/dev/null 2>&1; then
+            current_path="$path"
+            return
+          fi
+          sleep 0.05
+        done
+      }
+
+      if workspace=$(hyprctl activeworkspace -j | jq -r .id); then
+        set_wallpaper "$workspace"
+      fi
+
+      socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+      socat -U - "UNIX-CONNECT:$socket" | while IFS= read -r event; do
+        case "$event" in
+          workspacev2\>\>*)
+            payload=''${event#*>>}
+            set_wallpaper "''${payload%%,*}"
+            ;;
+        esac
+      done
+    '';
+  };
 in
 {
   wayland.windowManager.hyprland = {
@@ -20,10 +73,17 @@ in
       # Native 1920x1080 with no UI scaling for maximum usable workspace.
       monitor = "eDP-1,preferred,auto,1";
 
+      # Set the compositor cursor before its first frame instead of changing it
+      # asynchronously with exec-once.
+      env = [
+        "XCURSOR_THEME,Bibata-Modern-Ice"
+        "XCURSOR_SIZE,22"
+      ];
+
       exec-once = [
+        "${pkgs.waybar}/bin/waybar"
         "nm-applet --indicator"
         "blueman-applet"
-        "hyprctl setcursor Bibata-Modern-Ice 22"
       ];
 
       input = {
@@ -164,19 +224,6 @@ in
     };
   };
 
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      ipc = "on";
-      splash = false;
-      wallpaper = [{
-        monitor = "eDP-1";
-        path = "${wallpaper}";
-        fit_mode = "cover";
-      }];
-    };
-  };
-
   programs.hyprlock = {
     enable = true;
     settings = {
@@ -185,7 +232,7 @@ in
         hide_cursor = true;
       };
       background = [{
-        path = "${wallpaper}";
+        path = "${wallpapers.family}";
         blur_passes = 1;
         blur_size = 4;
         brightness = 0.55;
@@ -287,6 +334,33 @@ in
     auto_save=false
   '';
 
-  # The hyprpaper service does not add its package to the user profile.
-  home.packages = [ pkgs.hyprpaper ];
+  systemd.user.services = {
+    awww = {
+      Unit = {
+        Description = "Animated Wayland wallpaper daemon";
+        After = [ "graphical-session.target" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.awww}/bin/awww-daemon --quiet";
+        Restart = "always";
+        RestartSec = 1;
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+    };
+
+    workspace-wallpaper = {
+      Unit = {
+        Description = "Switch the wallpaper with the active workspace";
+        After = [ "graphical-session.target" "awww.service" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        ExecStart = "${workspaceWallpaper}/bin/workspace-wallpaper";
+        Restart = "on-failure";
+        RestartSec = 1;
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+    };
+  };
 }

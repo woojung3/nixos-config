@@ -23,6 +23,12 @@ in
       TERMINAL = "foot";
     };
     sessionPath = [ "$HOME/.local/bin" ];
+    pointerCursor = {
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Ice";
+      size = 22;
+      gtk.enable = true;
+    };
     packages = with pkgs; [
       jq
       ripgrep
@@ -60,11 +66,6 @@ in
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
-    };
-    cursorTheme = {
-      name = "Bibata-Modern-Ice";
-      package = pkgs.bibata-cursors;
-      size = 22;
     };
     font = {
       name = theme.fonts.ui;

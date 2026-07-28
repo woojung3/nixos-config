@@ -13,6 +13,11 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    qylock = {
+      url = "github:Darkkal44/qylock";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ nixpkgs, home-manager, disko, ... }: {
@@ -24,6 +29,7 @@
       modules = [
         disko.nixosModules.disko
         home-manager.nixosModules.home-manager
+        inputs.qylock.nixosModules.default
         ./hosts/jwlaptop
         {
           home-manager = {

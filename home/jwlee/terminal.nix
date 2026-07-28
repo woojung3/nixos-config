@@ -15,7 +15,7 @@ in
         selection-target = "clipboard";
       };
       "colors-dark" = {
-        alpha = 0.98;
+        alpha = 0.88;
         background = c.background;
         foreground = c.foreground;
         cursor = "${c.background} ${c.accent}";

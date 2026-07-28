@@ -15,12 +15,25 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
-    timeout = 3;
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+      timeout = 3;
+    };
+    # Keep routine kernel, initrd, udev, and systemd status messages off-screen.
+    # Errors and unusually slow services remain visible.
+    consoleLogLevel = 3;
+    initrd.verbose = false;
+    kernelParams = [
+      "quiet"
+      "udev.log_level=3"
+      "rd.udev.log_level=3"
+      "systemd.show_status=auto"
+      "rd.systemd.show_status=auto"
+    ];
+    tmp.cleanOnBoot = true;
   };
-  boot.tmp.cleanOnBoot = true;
 
   networking.networkmanager.enable = true;
 

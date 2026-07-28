@@ -6,6 +6,7 @@
     obsidian
     mousepad
     smplayer
+    mpv
     baobab
 
     # Desktop integration
