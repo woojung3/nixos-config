@@ -12,46 +12,71 @@ let
   };
   workspaceWallpaper = pkgs.writeShellApplication {
     name = "workspace-wallpaper";
-    runtimeInputs = [ pkgs.awww pkgs.hyprland pkgs.jq pkgs.socat ];
+    runtimeInputs = [
+      pkgs.awww
+      pkgs.hyprland
+      pkgs.jq
+      pkgs.socat
+    ];
     text = ''
-      current_path=""
+      declare -A current_paths=()
+
+      wallpaper_for_workspace() {
+        case "$1" in
+          1|6) printf '%s\n' ${wallpapers.glenCanyon} ;;
+          2|7) printf '%s\n' ${wallpapers.family} ;;
+          3|8) printf '%s\n' ${wallpapers.jirisanSunrise} ;;
+          4|9) printf '%s\n' ${wallpapers.yeouido} ;;
+          5|10) printf '%s\n' ${wallpapers.grandCanyon} ;;
+          *) printf '%s\n' ${wallpapers.family} ;;
+        esac
+      }
 
       set_wallpaper() {
-        case "$1" in
-          1) path=${wallpapers.glenCanyon} ;;
-          2) path=${wallpapers.family} ;;
-          3) path=${wallpapers.jirisanSunrise} ;;
-          4) path=${wallpapers.yeouido} ;;
-          5) path=${wallpapers.grandCanyon} ;;
-          *) path=${wallpapers.family} ;;
-        esac
+        local output="$1"
+        local workspace="$2"
+        local path
+        path="$(wallpaper_for_workspace "$workspace")"
 
-        if [[ "$path" == "$current_path" ]]; then
+        if [[ "''${current_paths[$output]:-}" == "$path" ]]; then
           return
         fi
 
-        # The daemon may need a moment to create its socket during login.
+        # The daemon and a newly connected output may need a moment to become
+        # ready. Keep wallpaper state independently for every monitor.
         for _ in {1..20}; do
-          if awww img --outputs eDP-1 --resize crop \
+          if awww img --outputs "$output" --resize crop \
             --transition-type fade --transition-duration 0.25 \
             --transition-fps 60 "$path" >/dev/null 2>&1; then
-            current_path="$path"
+            current_paths[$output]="$path"
             return
           fi
           sleep 0.05
         done
       }
 
-      if workspace=$(hyprctl activeworkspace -j | jq -r .id); then
-        set_wallpaper "$workspace"
-      fi
+      refresh_wallpapers() {
+        while IFS=$'\t' read -r output workspace; do
+          set_wallpaper "$output" "$workspace"
+        done < <(
+          hyprctl monitors -j | jq -r \
+            '.[] | [.name, (.activeWorkspace.id | tostring)] | @tsv'
+        )
+      }
+
+      refresh_wallpapers
 
       socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
       socat -U - "UNIX-CONNECT:$socket" | while IFS= read -r event; do
         case "$event" in
-          workspacev2\>\>*)
-            payload=''${event#*>>}
-            set_wallpaper "''${payload%%,*}"
+          monitor*)
+            # A reconnected output needs its image sent again, even when it
+            # displays the same workspace as before disconnection.
+            current_paths=()
+            refresh_wallpapers
+            ;;
+          workspace*)
+            refresh_wallpapers
             ;;
         esac
       done
@@ -70,8 +95,30 @@ in
     systemd.enable = false; # UWSM owns the graphical session.
     settings = {
       "$mainMod" = "SUPER";
-      # Native 1920x1080 with no UI scaling for maximum usable workspace.
-      monitor = "eDP-1,preferred,auto,1";
+      # Keep both displays at a smooth 60 Hz. The HDMI sink advertises 4K as
+      # preferred, but this laptop can only drive that mode at 30 Hz.
+      monitor = [
+        "eDP-1,1920x1080@60,0x0,1"
+        "HDMI-A-1,1920x1080@60,1920x0,1"
+      ];
+
+      # Workspaces 1-5 belong to the laptop and 6-10 to the external display.
+      # Persistent workspaces also keep all ten visible in Waybar.
+      workspace =
+        (map (ws: "${toString ws}, monitor:eDP-1, persistent:true") [
+          1
+          2
+          3
+          4
+          5
+        ])
+        ++ (map (ws: "${toString ws}, monitor:HDMI-A-1, persistent:true") [
+          6
+          7
+          8
+          9
+          10
+        ]);
 
       # Set the compositor cursor before its first frame instead of changing it
       # asynchronously with exec-once.
@@ -204,11 +251,21 @@ in
         ", XF86AudioNext, exec, playerctl next"
         ", XF86AudioPrev, exec, playerctl previous"
         ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-      ] ++ (builtins.concatLists (builtins.genList (i:
-        let ws = i + 1; in [
-          "$mainMod, code:1${toString i}, workspace, ${toString ws}"
-          "$mainMod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
-        ]) 9));
+      ]
+      ++ (builtins.concatLists (
+        builtins.genList (
+          i:
+          let
+            ws = i + 1;
+            # Number-row keycodes are 10-18 for 1-9 and 19 for 0.
+            keycode = if ws == 10 then 19 else 9 + ws;
+          in
+          [
+            "$mainMod, code:${toString keycode}, workspace, ${toString ws}"
+            "$mainMod SHIFT, code:${toString keycode}, movetoworkspace, ${toString ws}"
+          ]
+        ) 10
+      ));
 
       bindel = [
         ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
@@ -342,7 +399,10 @@ in
         PartOf = [ "graphical-session.target" ];
       };
       Service = {
-        ExecStart = "${pkgs.awww}/bin/awww-daemon --quiet";
+        # The workspace service always selects every output's wallpaper, so
+        # restoring awww's cache is redundant and requires an unavailable CLI
+        # in the daemon service's PATH.
+        ExecStart = "${pkgs.awww}/bin/awww-daemon --quiet --no-cache";
         Restart = "always";
         RestartSec = 1;
       };
