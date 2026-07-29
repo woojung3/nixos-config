@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 let
   theme = import ../../themes/bloom.nix;
 in
@@ -22,7 +22,6 @@ in
       BROWSER = "google-chrome-stable";
       TERMINAL = "foot";
     };
-    sessionPath = [ "$HOME/.local/bin" ];
     pointerCursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Ice";
@@ -30,6 +29,7 @@ in
       gtk.enable = true;
     };
     packages = with pkgs; [
+      inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.pi-coding-agent
       jq
       ripgrep
       fd
