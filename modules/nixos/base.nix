@@ -87,6 +87,8 @@
   services.tailscale = {
     enable = true;
     openFirewall = true;
+    useRoutingFeatures = "client";
+    extraSetFlags = [ "--accept-routes=true" ];
   };
 
   environment.systemPackages = with pkgs; [
