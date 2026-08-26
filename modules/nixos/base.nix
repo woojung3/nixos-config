@@ -2,7 +2,10 @@
 {
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
       warn-dirty = false;
     };
@@ -35,7 +38,10 @@
     tmp.cleanOnBoot = true;
   };
 
-  networking.networkmanager.enable = true;
+  networking = {
+    networkmanager.enable = true;
+    firewall.trustedInterfaces = [ "tailscale0" ];
+  };
 
   time.timeZone = "Asia/Seoul";
   i18n = {
@@ -59,7 +65,12 @@
     users.jwlee = {
       isNormalUser = true;
       description = "Jinwoo Lee";
-      extraGroups = [ "audio" "networkmanager" "video" "wheel" ];
+      extraGroups = [
+        "audio"
+        "networkmanager"
+        "video"
+        "wheel"
+      ];
       shell = pkgs.zsh;
     };
   };
@@ -73,6 +84,10 @@
   security.sudo.wheelNeedsPassword = true;
   services.fwupd.enable = true;
   services.openssh.enable = false;
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+  };
 
   environment.systemPackages = with pkgs; [
     git

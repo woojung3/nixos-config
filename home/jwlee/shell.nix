@@ -24,6 +24,7 @@ in
       ll = "eza -la --group-directories-first --git";
       cat = "bat --plain --paging=never";
       rebuild = "nh os switch";
+      update = "cd /home/jwlee/Workspace/nixos-config && nix flake update && nh os boot";
     };
     initContent = ''
       setopt LOCAL_OPTIONS RM_STAR_SILENT PROMPT_SUBST
