@@ -13,7 +13,7 @@
     upower.enable = true;
     logind.settings.Login = {
       HandleLidSwitch = "suspend";
-      HandleLidSwitchExternalPower = "suspend";
+      HandleLidSwitchExternalPower = "ignore";
       HandlePowerKey = "suspend";
     };
   };

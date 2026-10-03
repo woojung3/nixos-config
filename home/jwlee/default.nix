@@ -30,6 +30,7 @@ in
     };
     packages = with pkgs; [
       inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.pi-coding-agent
+      inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.herdr
       jq
       ripgrep
       fd

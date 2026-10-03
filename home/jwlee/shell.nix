@@ -62,6 +62,11 @@ in
     };
   };
 
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper.enable = true;
+  };
+
   programs.lazygit = {
     enable = true;
     settings.gui = {

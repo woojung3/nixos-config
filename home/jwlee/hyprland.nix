@@ -10,6 +10,27 @@ let
     yeouido = "/home/jwlee/Pictures/Wallpapers/yeouido.jpg";
     grandCanyon = "/home/jwlee/Pictures/Wallpapers/grand-canyon.jpg";
   };
+  suspendOnBattery = pkgs.writeShellApplication {
+    name = "suspend-on-battery";
+    runtimeInputs = [ pkgs.systemd ];
+    text = ''
+      # Do not suspend when any external power supply is online.
+      for supply in /sys/class/power_supply/*; do
+        if [[ -r "$supply/online" ]] && [[ "$(< "$supply/online")" == 1 ]]; then
+          exit 0
+        fi
+      done
+
+      # Require positive evidence of battery use; unknown state is a no-op.
+      for supply in /sys/class/power_supply/*; do
+        if [[ -r "$supply/type" && -r "$supply/status" ]] &&
+           [[ "$(< "$supply/type")" == Battery && "$(< "$supply/status")" == Discharging ]]; then
+          systemctl suspend
+          exit 0
+        fi
+      done
+    '';
+  };
   workspaceWallpaper = pkgs.writeShellApplication {
     name = "workspace-wallpaper";
     runtimeInputs = [
@@ -330,7 +351,7 @@ in
       listener = [
         { timeout = 300; on-timeout = "loginctl lock-session"; }
         { timeout = 600; on-timeout = "hyprctl dispatch dpms off"; on-resume = "hyprctl dispatch dpms on"; }
-        { timeout = 1200; on-timeout = "systemctl suspend"; }
+        { timeout = 1200; on-timeout = "${suspendOnBattery}/bin/suspend-on-battery"; }
       ];
     };
   };
