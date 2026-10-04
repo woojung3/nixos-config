@@ -6,8 +6,8 @@ in vec2 v_texcoord;
 layout(location = 0) out vec4 fragColor;
 uniform sampler2D tex;
 
-// A static, single-sample screen effect. No time uniform, blur passes, animated
-// noise or damage-tracking override: idle frames need not be redrawn for CRT.
+// A static, single-sample screen effect: no time uniform, blur or animation.
+// The toggle owns redraw policy; curved sampling needs full-monitor damage.
 void main() {
     vec2 p = v_texcoord * 2.0 - 1.0;
     const float curvature = 0.016;
@@ -34,13 +34,15 @@ void main() {
     vec3 baseColor = mix(vec3(luminance), source.rgb, sourceSaturation);
     vec3 color = mix(baseColor, signal * phosphor, amberMix);
 
-    // Fixed two-pixel scanlines: strongest in midtones, gentler on bright text.
+    // Alternating two-pixel dark/light bands; gentler on bright text.
     // Reuse luminance; no additional texture reads or time-dependent effects.
     float midtones = smoothstep(0.05, 0.35, signal)
                    * (1.0 - smoothstep(0.60, 0.98, signal));
-    float lineContrast = 0.02 + 0.065 * midtones;
+    const float scanlineStrength = 2.0;
+    const float scanlineBandHeight = 2.0;
+    float lineContrast = scanlineStrength * (0.02 + 0.065 * midtones);
     float scanline = mix(0.99 - lineContrast, 0.99,
-                         mod(floor(gl_FragCoord.y), 2.0));
+                         mod(floor(gl_FragCoord.y / scanlineBandHeight), 2.0));
     // Screen-fixed phosphor grain: an integer hash needs no extra texture or
     // trigonometry. Multiplicative noise preserves black and the existing hue.
     uvec2 pixel = uvec2(gl_FragCoord.xy);

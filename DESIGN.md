@@ -51,8 +51,10 @@ curvature, fixed scanlines, static grain and edge shading. Bloom's normal colors
 return when it is disabled; the mode starts off in a new session.
 
 The effect does not change bar height, layout or font size. It has no blur,
-animated noise, flicker or continuous redraw timer. Damage tracking stays enabled
-for efficiency, with possible partial-redraw artifacts around changing content.
+animated noise, flicker or continuous redraw timer. CRT redraws changed monitors
+in full to keep curvature consistent, while unchanged frames can still be skipped.
+An optional low-power policy preserves partial redraw, accepting possible artifacts
+around changing content.
 
 ## References
 

@@ -87,10 +87,12 @@ For audio routing use temporary virtual sinks rather than unexpectedly switching
 real speakers. The MPRIS fixture is documented in the
 [panel guide](../home/jwlee/quickshell/README.md).
 
-For CRT, check toggle/restoration and shader compilation, unchanged 34px Waybar
-height and unchanged damage tracking. Partial-redraw artifacts remain a documented
-constraint; animated noise and forced full-frame redraw are absent. Performance
-requires measurement on the actual target device.
+For CRT, check shader compilation and restoration of the shader, cursor mode and
+damage policy. Waybar stays 34px high. The default policy uses monitor damage
+while active; the lightweight policy leaves the prior damage mode unchanged.
+Check typing/scrolling for stale fragments under the default policy. Animated
+noise and forced idle rendering are absent. Compare both policies on the actual
+target device before deciding its performance/quality tradeoff.
 
 ## System build
 
