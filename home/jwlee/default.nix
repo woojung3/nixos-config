@@ -6,6 +6,7 @@ in
   imports = [
     ./hyprland.nix
     ./waybar.nix
+    ./quickshell.nix
     ./rofi.nix
     ./terminal.nix
     ./shell.nix

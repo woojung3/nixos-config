@@ -150,6 +150,7 @@ in
 
       exec-once = [
         "${pkgs.waybar}/bin/waybar"
+        "${pkgs.quickshell}/bin/quickshell -c bloom"
         "nm-applet --indicator"
         "blueman-applet"
       ];
@@ -249,7 +250,7 @@ in
         "$mainMod, P, pseudo"
         "$mainMod, J, layoutmsg, togglesplit"
         "$mainMod, L, exec, loginctl lock-session"
-        "$mainMod, ESCAPE, exec, power-menu"
+        "$mainMod, ESCAPE, exec, quickshell -c bloom ipc call power toggle"
         "$mainMod SHIFT, S, exec, grim -g \"$(slurp)\" - | swappy -f -"
         "$mainMod, C, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
@@ -267,6 +268,11 @@ in
         "$mainMod SHIFT, right, movewindow, r"
         "$mainMod SHIFT, up, movewindow, u"
         "$mainMod SHIFT, down, movewindow, d"
+
+        "$mainMod CTRL, left, swapwindow, l"
+        "$mainMod CTRL, right, swapwindow, r"
+        "$mainMod CTRL, up, swapwindow, u"
+        "$mainMod CTRL, down, swapwindow, d"
 
         ", XF86AudioPlay, exec, playerctl play-pause"
         ", XF86AudioNext, exec, playerctl next"
@@ -291,8 +297,8 @@ in
       bindel = [
         ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
         ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-        ", XF86MonBrightnessUp, exec, brightnessctl set 5%+"
-        ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
+        ", XF86MonBrightnessUp, exec, brightness-control up"
+        ", XF86MonBrightnessDown, exec, brightness-control down"
       ];
 
       bindm = [

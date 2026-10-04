@@ -48,14 +48,20 @@ in
         format = "{icon} {volume}%";
         format-muted = "󰖁 —";
         format-icons = [ "" "" "" ];
-        on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        on-click = "quickshell -c bloom ipc call sound toggle";
         on-click-right = "pavucontrol";
+        on-scroll-up = "true";
+        on-scroll-down = "true";
+        max-volume = 100;
       };
 
       backlight = {
         format = " {percent}%";
-        on-scroll-up = "brightnessctl set 5%+";
-        on-scroll-down = "brightnessctl set 5%-";
+        on-click = "quickshell -c bloom ipc call brightness toggle";
+        tooltip-format = "Brightness {percent}% · Click to adjust";
+        # Override Waybar's built-in scroll handling as well.
+        on-scroll-up = "true";
+        on-scroll-down = "true";
       };
 
       battery = {
@@ -64,23 +70,21 @@ in
         format = "{icon} {capacity}%";
         format-icons = [ "" "" "" "" "" ];
         format-charging = "󰂄 {capacity}%";
-        tooltip-format = "{timeTo} · {power:.1f} W";
+        on-click = "quickshell -c bloom ipc call battery toggle";
+        tooltip = false;
       };
 
       clock = {
         interval = 30;
         format = "{:%a %d · %H:%M}";
-        tooltip-format = "<tt><small>{calendar}</small></tt>";
-        calendar = {
-          mode = "month";
-          weeks-pos = "right";
-        };
+        on-click = "quickshell -c bloom ipc call calendar toggle";
+        tooltip = false;
       };
 
       "custom/power" = {
         format = "";
         tooltip-format = "Power menu";
-        on-click = "power-menu";
+        on-click = "quickshell -c bloom ipc call power toggle";
       };
     };
 
