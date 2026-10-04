@@ -7,6 +7,7 @@ in
     ./hyprland.nix
     ./waybar.nix
     ./quickshell.nix
+    ./crt.nix
     ./rofi.nix
     ./terminal.nix
     ./shell.nix

@@ -101,8 +101,8 @@ FocusScope {
                 leftAligned: true
                 enabled: !actionProcess.running
                 onClicked: menu.choose(index, focusReason)
-                Keys.onUpPressed: choices.itemAt((index + 4) % 5).forceActiveFocus(Qt.TabFocusReason)
-                Keys.onDownPressed: choices.itemAt((index + 1) % 5).forceActiveFocus(Qt.TabFocusReason)
+                Keys.onUpPressed: choices.itemAt((index + 4) % 5).focusFor(Qt.TabFocusReason)
+                Keys.onDownPressed: choices.itemAt((index + 1) % 5).focusFor(Qt.TabFocusReason)
             }
         }
         Text {
@@ -139,7 +139,7 @@ FocusScope {
                 width: (menu.width - 44) / 2
                 text: "Cancel"
                 onClicked: menu.reset(focusReason)
-                Keys.onRightPressed: confirmButton.forceActiveFocus(Qt.TabFocusReason)
+                Keys.onRightPressed: confirmButton.focusFor(Qt.TabFocusReason)
             }
             BloomButton {
                 id: confirmButton
@@ -148,7 +148,7 @@ FocusScope {
                 emphasized: true
                 enabled: !actionProcess.running
                 onClicked: menu.execute(menu.pendingAction)
-                Keys.onLeftPressed: cancelButton.forceActiveFocus(Qt.TabFocusReason)
+                Keys.onLeftPressed: cancelButton.focusFor(Qt.TabFocusReason)
             }
         }
     }

@@ -10,7 +10,8 @@ instance started by Hyprland. Targets are `brightness`, `power`, `calendar`,
 | --- | --- |
 | `../quickshell.nix` | Packages, component registry, Home Manager deployment |
 | `shell.qml` | IPC endpoints and panel composition |
-| `PanelHost.qml` | Window geometry, outside-click dismissal, keyboard-focus ownership/restoration |
+| `PanelHost.qml` | Layer window, geometry, Hyprland focus grab and Escape adapter |
+| `PanelSession.qml` | Popup state, dismissal guard, cached application and delayed focus restoration |
 | `*Panel.qml` | Individual panel state and system-service integration |
 | `NowPlaying.qml` | MPRIS player selection, artwork and transport controls |
 | `BloomButton.qml`, `BloomSlider.qml`, `MediaIconButton.qml` | Shared visual and input behavior |
@@ -18,8 +19,9 @@ instance started by Hyprland. Targets are `brightness`, `power`, `calendar`,
 | `BatteryInfo.js`, `CalendarMath.js`, `SoundLogic.js` | Pure, independently tested policy/calculation functions |
 | `scripts/` | Validated hardware/session command helpers, packaged with their dependencies |
 
-Nix generates `Theme.qml` from `themes/bloom.nix` and `Commands.qml` with absolute
-executable paths. Appearance and command wiring are separate singleton APIs.
+Nix generates `Theme.qml` through `theme.nix` from `themes/bloom.nix`, and
+`Commands.qml` with absolute executable paths. UI tests use the same theme
+template as deployment. Appearance and command wiring are separate singleton APIs.
 The component registry generates both file deployment and `qmldir`; register a
 new QML type once there. JavaScript files belong in the adjacent `files` list.
 
@@ -28,16 +30,25 @@ new QML type once there. JavaScript files belong in the adjacent `files` list.
 - A panel is a `FocusScope` with `implicitWidth`, `implicitHeight` and `reset()`.
   `reset()` prepares a newly opened panel and sets its initial keyboard focus.
   It must not change hardware/session state merely by opening the panel.
-- `PanelHost` owns the single visible popup. Panels do not create layer windows,
-  grab focus or implement their own outside-click handling. Margins are relative
+- `PanelHost` owns the single visible popup and delegates state to `PanelSession`.
+  Panels do not create layer windows, grab focus or implement their own
+  outside-click handling. Margins are relative
   to Waybar's reserved area. Escape, outside clicks and same-button toggles close
   the popup; another application/workspace choice must not be overridden.
 - Keep panels instantiated while hidden: asynchronous commands can finish after
   dismissal. Power actions dismiss without restoring app focus; failures reopen
   the existing panel state with `show(panel, false)`.
-- `BloomButton` handles Enter and Return through `onClicked`; Space is native.
-  Arrow-key navigation must call `forceActiveFocus(Qt.TabFocusReason)`. Mouse
-  focus is not a selected state. `selected` draws a check; `emphasized` denotes
+- `PanelSession` receives a compositor with `activeToplevel`, `focusedWorkspace`
+  and the `activeToplevelChanged` signal. Application targets expose `workspace`
+  and `wayland.activate()`. The last application is a cached value, not a live
+  binding that becomes null with layer focus. Restoration waits 80ms and never
+  overrides a different application/workspace. Outside dismissal guards duplicate
+  button delivery for 200ms; reopening cancels pending restoration.
+- `BloomButton` handles Enter and Return through `onClicked`; Space retains native
+  press/release behavior. Arrow-key navigation uses `focusFor(Qt.TabFocusReason)`.
+  This helper sets both focus and its reason, including on an already-focused
+  button. Pointer presses use the mouse reason without taking the native button's
+  grab. Mouse focus is not a selected state. `selected` draws a check; `emphasized` denotes
   persistent state or a primary action, never ordinary focus.
 - `ChoicePicker` accepts `[{key, label}]`, a `selectedKey` and a header `label`.
   It emits `chosen(key)`. Callers own the selection; the picker owns expansion
@@ -61,21 +72,27 @@ power-profiles-daemon; no separate polling daemons are needed for those panels.
 
 ## Verification
 
-From the repository root (Node.js and Bash):
+From the repository root:
 
 ```sh
-bash tests/quickshell/run.sh
+nix flake check "path:$PWD" --print-build-logs
 nix build --no-link "path:$PWD#nixosConfigurations.jwlaptop.config.system.build.toplevel"
 ```
 
-The offline suite never changes real hardware/session state. Shell helpers use
-mock executables; JavaScript tests cover calendar boundaries/timezones, battery
-estimates, volume bounds and player selection/disconnection.
+[Automated tests](../../../tests/README.md) never change real hardware/session
+state. Shell helpers use mock executables; JavaScript tests cover calendar
+boundaries/timezones, battery estimates, volume bounds and player selection.
+Qt Quick Test runs the production controls and `PanelSession` offscreen with
+synthetic pointer/keyboard events and a deterministic compositor. It covers
+focus reasons, selection, activation, dismissal, focus return, workspace changes
+and rapid reopen. It does not emulate Hyprland's layer-shell protocol.
 
 For live UI changes, check mouse and keyboard operation independently: initial
 focus, Tab/arrows/Enter, mouse-focus neutrality, selected-state rendering,
 Escape/outside/same-button dismissal, and text input in the previous application
-after dismissal. Check all five Waybar buttons when modifying `PanelHost`.
+after dismissal. Check all five Waybar buttons when modifying `PanelHost` or
+`PanelSession`. These live checks cover compositor integration, which the
+isolated UI tests deliberately do not replace.
 
 `tests/quickshell/mpris-fixture.py <temporary-log-path>` requires Python with
 `dbus-next`. It exports two silent test players, records received commands and

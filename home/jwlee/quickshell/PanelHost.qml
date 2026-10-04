@@ -3,36 +3,27 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-// Panels supply implicit dimensions and reset(). This host owns all session
-// focus, dismissal and layer-shell behavior; individual panels never grab input.
+// Panels supply implicit dimensions and reset(). Session state is separate from
+// this Hyprland/layer-shell adapter so it can be regression-tested offscreen.
 PanelWindow {
     id: host
     default property alias panels: frame.data
-    property Item activePanel: null
-    property bool opened: false
-    property var lastApplication: Hyprland.activeToplevel
-    property var returnApplication: null
-    property bool restoreOnClose: true
+    property alias activePanel: session.activePanel
+    property alias opened: session.opened
 
     function show(panel, reset = true) {
-        activePanel = panel;
-        opened = true;
-        if (reset)
-            panel.reset();
+        session.show(panel, reset);
     }
     function toggle(panel) {
-        // An outside click can also reach Waybar. Ignore the second delivery
-        // of the same click rather than reopening a just-dismissed panel.
-        if (dismissGuard.running)
-            return;
-        if (opened && activePanel === panel)
-            dismiss();
-        else
-            show(panel);
+        session.toggle(panel);
     }
     function dismiss(restore = true) {
-        restoreOnClose = restore;
-        opened = false;
+        session.dismiss(restore);
+    }
+
+    PanelSession {
+        id: session
+        compositor: Hyprland
     }
 
     visible: opened
@@ -53,52 +44,10 @@ PanelWindow {
     // Exclusive layer focus prevents Hyprland's outside-click grab dismissal.
     WlrLayershell.keyboardFocus: opened ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
-    Connections {
-        target: Hyprland
-        function onActiveToplevelChanged() {
-            if (!host.opened && Hyprland.activeToplevel)
-                host.lastApplication = Hyprland.activeToplevel;
-        }
-    }
-    onOpenedChanged: {
-        if (opened) {
-            restoreFocus.stop();
-            returnApplication = Hyprland.activeToplevel || lastApplication;
-            restoreOnClose = true;
-        } else if (restoreOnClose) {
-            restoreFocus.restart();
-        }
-    }
-    Timer {
-        id: restoreFocus
-        // Wait for unmapping and pointer release before restoring app input.
-        interval: 80
-        onTriggered: {
-            const previous = host.returnApplication;
-            const current = Hyprland.activeToplevel;
-            if (host.opened || !previous || !previous.wayland)
-                return;
-            // Never override an outside-click app selection or workspace switch.
-            if (current && current !== previous)
-                return;
-            if (previous.workspace !== Hyprland.focusedWorkspace)
-                return;
-            previous.wayland.activate();
-        }
-    }
-    Timer {
-        id: dismissGuard
-        interval: 200
-    }
     HyprlandFocusGrab {
         windows: [host]
         active: host.opened
-        onCleared: {
-            if (host.opened) {
-                host.dismiss();
-                dismissGuard.restart();
-            }
-        }
+        onCleared: session.dismissOutside()
     }
     Rectangle {
         id: frame

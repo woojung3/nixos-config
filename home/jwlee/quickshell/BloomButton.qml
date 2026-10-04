@@ -11,14 +11,33 @@ Button {
     focusPolicy: Qt.StrongFocus
     padding: 10
 
+    function focusFor(reason) {
+        forceActiveFocus(reason);
+        // forceActiveFocus alone does not update an already-focused control.
+        focusReason = reason;
+    }
     function activateFromKeyboard() {
         if (!enabled)
             return;
-        forceActiveFocus(Qt.TabFocusReason);
+        focusFor(Qt.TabFocusReason);
         clicked();
     }
     Keys.onReturnPressed: activateFromKeyboard()
     Keys.onEnterPressed: activateFromKeyboard()
+    Keys.onSpacePressed: event => {
+        focusFor(Qt.TabFocusReason);
+        event.accepted = false; // Keep native press/release and click behavior.
+    }
+
+    // Native buttons can retain their keyboard focus reason when clicked again
+    // while already focused. Observe presses without taking the button's grab.
+    TapHandler {
+        gesturePolicy: TapHandler.DragThreshold
+        onPressedChanged: {
+            if (pressed)
+                control.focusFor(Qt.MouseFocusReason);
+        }
+    }
 
     contentItem: Text {
         text: control.text

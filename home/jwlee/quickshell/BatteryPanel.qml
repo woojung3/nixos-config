@@ -161,8 +161,8 @@ FocusScope {
                     emphasized: PowerProfiles.profile === modelData.value
                     // Keep keyboard focus while the asynchronous request runs.
                     onClicked: battery.selectMode(index)
-                    Keys.onUpPressed: choices.itemAt((index + battery.modes.length - 1) % battery.modes.length).forceActiveFocus(Qt.TabFocusReason)
-                    Keys.onDownPressed: choices.itemAt((index + 1) % battery.modes.length).forceActiveFocus(Qt.TabFocusReason)
+                    Keys.onUpPressed: choices.itemAt((index + battery.modes.length - 1) % battery.modes.length).focusFor(Qt.TabFocusReason)
+                    Keys.onDownPressed: choices.itemAt((index + 1) % battery.modes.length).focusFor(Qt.TabFocusReason)
                 }
             }
         }

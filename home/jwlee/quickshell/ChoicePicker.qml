@@ -19,7 +19,7 @@ FocusScope {
     function choose(index, reason) {
         chosen(options[index].key);
         expanded = false;
-        header.forceActiveFocus(reason);
+        header.focusFor(reason);
     }
     Column {
         id: content
@@ -38,7 +38,7 @@ FocusScope {
             Keys.onDownPressed: {
                 if (picker.expandable && choices.count) {
                     picker.expanded = true;
-                    choices.itemAt(0).forceActiveFocus(Qt.TabFocusReason);
+                    choices.itemAt(0).focusFor(Qt.TabFocusReason);
                 }
             }
         }
@@ -66,8 +66,8 @@ FocusScope {
                         selected: modelData.key === picker.selectedKey
                         leftAligned: true
                         onClicked: picker.choose(index, focusReason)
-                        Keys.onUpPressed: choices.itemAt((index + choices.count - 1) % choices.count).forceActiveFocus(Qt.TabFocusReason)
-                        Keys.onDownPressed: choices.itemAt((index + 1) % choices.count).forceActiveFocus(Qt.TabFocusReason)
+                        Keys.onUpPressed: choices.itemAt((index + choices.count - 1) % choices.count).focusFor(Qt.TabFocusReason)
+                        Keys.onDownPressed: choices.itemAt((index + 1) % choices.count).focusFor(Qt.TabFocusReason)
                         onActiveFocusChanged: {
                             if (activeFocus)
                                 listViewport.contentY = Math.max(0, Math.min(y, list.height - listViewport.height));

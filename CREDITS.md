@@ -16,7 +16,7 @@ assets from the following public dotfiles projects.
 - License: GPL-3.0
 - `assets/wallpapers/flowers.jpg` is copied from `walls/flowers.jpg`.
 - The Flowers screenshot informed the Bloom palette and wallpaper-led visual
-  direction. The old KDE implementation itself is not installed.
+  direction. KDE components from that project are not installed.
 
 ## elenapan dotfiles
 
@@ -28,8 +28,21 @@ assets from the following public dotfiles projects.
 ## conrad-mo Hyprland dotfiles
 
 - Source: <https://github.com/conrad-mo/hyprland-dot>
-- No license was found during the survey.
+- No license is identified for the referenced material.
 - Used as visual inspiration only; no files or source were copied.
+
+## AmadeusWM Hyprland Winter
+
+- Source: <https://github.com/AmadeusWM/hyprland-winter>
+- Visual reference for workspace typography and the `一 二 三 四 五 六 七 八 九 〇`
+  label sequence. Its Eww implementation and font files are not bundled.
+
+## vdawg-git space_dots — Golden Era
+
+- Source: <https://github.com/vdawg-git/space_dots>
+- Visual reference for CRT curvature, scanlines and warm phosphor colors.
+- Bloom's shader and toggle are implemented locally; the upstream shader,
+  media and theme assets are not bundled.
 
 ## Qylock
 

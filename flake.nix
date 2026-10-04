@@ -21,27 +21,38 @@
     };
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, disko, ... }: {
-    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
+  outputs =
+    inputs@{
+      nixpkgs,
+      home-manager,
+      disko,
+      ...
+    }:
+    {
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
 
-    nixosConfigurations.jwlaptop = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
-        disko.nixosModules.disko
-        home-manager.nixosModules.home-manager
-        inputs.qylock.nixosModules.default
-        ./hosts/jwlaptop
-        {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            backupFileExtension = "hm-backup";
-            extraSpecialArgs = { inherit inputs; };
-            users.jwlee = import ./home/jwlee;
-          };
-        }
-      ];
+      checks.x86_64-linux = import ./tests {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      };
+
+      nixosConfigurations.jwlaptop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          disko.nixosModules.disko
+          home-manager.nixosModules.home-manager
+          inputs.qylock.nixosModules.default
+          ./hosts/jwlaptop
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "hm-backup";
+              extraSpecialArgs = { inherit inputs; };
+              users.jwlee = import ./home/jwlee;
+            };
+          }
+        ];
+      };
     };
-  };
 }

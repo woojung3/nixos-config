@@ -6,7 +6,7 @@ script="$root/home/jwlee/quickshell/scripts/brightness-control.sh"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 export RESULT="$tmp/result"
-printf '#!/usr/bin/env bash\ncase "$1" in max) echo "$MAX";; get) echo "$CURRENT";; set) echo "$2" > "$RESULT";; esac\n' > "$tmp/brightnessctl"
+printf '#!%s\ncase "$1" in max) echo "$MAX";; get) echo "$CURRENT";; set) echo "$2" > "$RESULT";; esac\n' "$(command -v bash)" > "$tmp/brightnessctl"
 chmod +x "$tmp/brightnessctl"
 export PATH="$tmp:$PATH"
 check() {

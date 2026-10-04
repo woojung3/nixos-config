@@ -7,7 +7,7 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 export POWER_TEST_LOG="$tmp/actions"
 for command in loginctl systemctl uwsm; do
-  printf '#!/usr/bin/env bash\nprintf "%%s %%s\\n" "${0##*/}" "$*" >> "$POWER_TEST_LOG"\n' > "$tmp/$command"
+  printf '#!%s\nprintf "%%s %%s\\n" "${0##*/}" "$*" >> "$POWER_TEST_LOG"\n' "$(command -v bash)" > "$tmp/$command"
   chmod +x "$tmp/$command"
 done
 export PATH="$tmp:$PATH"

@@ -34,7 +34,19 @@ in
       };
 
       "hyprland/workspaces" = {
-        format = "{id}";
+        format = "{icon}";
+        format-icons = {
+          "1" = "一";
+          "2" = "二";
+          "3" = "三";
+          "4" = "四";
+          "5" = "五";
+          "6" = "六";
+          "7" = "七";
+          "8" = "八";
+          "9" = "九";
+          "10" = "〇";
+        };
         persistent-workspaces = { "*" = 5; };
         on-click = "activate";
       };
@@ -129,7 +141,7 @@ in
       }
 
       #workspaces {
-        padding: 3px 5px;
+        padding: 1px 5px;
       }
 
       #workspaces button {
@@ -138,6 +150,11 @@ in
         border-radius: 7px;
         color: #${c.muted};
         background: transparent;
+      }
+
+      #workspaces button label {
+        font-size: 20px;
+        font-weight: 400;
       }
 
       #workspaces button:hover {
